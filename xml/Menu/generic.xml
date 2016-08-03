@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/generic/genericsync</path>
+    <page_callback>CRM_Generic_Form_GenericSync</page_callback>
+    <title>Generic Sync</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/generic/genericsettings</path>
+    <page_callback>CRM_Generic_Form_Settings</page_callback>
+    <title>Generic Settings</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/generic/genericsettings/Service</path>
+    <page_callback>CRM_Mailchimp_Form_Setting</page_callback>
+    <title>Mailchimp Setting</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/generic/genericsettings/mailchimpSettings</path>
+    <page_callback>CRM_Mailchimp_Form_Setting</page_callback>
+    <title>Mailchimp Setting</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/generic/genericsettings/ccSettings</path>
+    <page_callback>CRM_Admin_Form_Setting_ConstantContact</page_callback>
+    <title>Constant Contact Setting</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+  
+ <!--  <item>
+    <path>civicrm/generic/setting</path>
+    <page_callback>CRM_Generic_Form_Settings</page_callback>
+    <title>Settings</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item> -->
+</menu>
+  
