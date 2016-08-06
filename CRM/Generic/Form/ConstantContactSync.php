@@ -18,7 +18,7 @@ use Ctct\Components\Contacts\EmailAddress;
 use Ctct\Exceptions\CtctException;
 
 function civicrm_api3_job_constant_contact_sync( $sync_params )
-{
+{   
     $custom_fields = array(
         'ctct_ind' => array(
             'title' => 'ConstantContact sync (by cividesk)',
@@ -64,7 +64,7 @@ function civicrm_api3_job_constant_contact_sync( $sync_params )
                     'html_type' => 'Text',
                     'text_length' => 16,
                     'is_active' => 1,
-                    'is_view' => 1,
+                    //'is_view' => 1,
                     ),
                 ),
             ),

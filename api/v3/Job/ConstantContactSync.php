@@ -10,7 +10,8 @@
 // NON_SUBSCRIBER	The contact has registered for an account's event, but has not subscribed to any email lists.
 // VISITOR	A contact with this status has "liked" a social campaign page, but has not subscribed to a contact list.
 
-require_once 'packages/Ctct/autoload.php';
+require_once 'packages/Ctct/autoload.php';  
+require_once 'packages/Ctct/ConstantContact.php' ; 
 use Ctct\ConstantContact;
 use Ctct\Components\Contacts\Contact;
 use Ctct\Components\Contacts\ContactList;
@@ -29,6 +30,9 @@ foreach ($included_files as $filename) {ssss
 }
     exit;
     */
+
+    //CRM_Core_Session::setStatus($sync_params,'Sync Params') ;
+    //crm_core_error::debug("sync params ",$sync_params) ; 
     $custom_fields = array(
         'ctct_ind' => array(
             'title' => 'ConstantContact sync (by cividesk)',
@@ -89,6 +93,7 @@ foreach ($included_files as $filename) {ssss
 
     // No need to continue if nothing to sync
     if (empty($sync_groups)) {
+        CRM_Core_Session::setStatus($sync_groups,"Sync grooups") ;
       return civicrm_api3_create_success( array('No groups defined for synching') );
     }
 
@@ -235,7 +240,7 @@ foreach ($included_files as $filename) {ssss
             $NewContact = civi2ctct( $contact, $sync_groups );
             if (empty($contact['ctct_id'])) {
                 // contact was never synch'ed with CtCt
-                usleep(CTCT_TIMEOUT);
+                usleep(CTCT_TIMEOUT);                
                 $Results = $ConstantContact->getContactByEmail(CTCT_USERTOKEN, $contact['email']);
                 if ($OldContact = reset($Results->results)) {
                     if ($OldContact->status == 'OPTOUT') {
@@ -247,7 +252,8 @@ foreach ($included_files as $filename) {ssss
                           $processed['updated'] ++;
                       }
                     }
-                } else {
+                } 
+                else {
                     // contact really needs to be created in CtCt
                     usleep(CTCT_TIMEOUT);
                     if ($result = $ConstantContact->addContact(CTCT_USERTOKEN, $NewContact))
@@ -352,7 +358,8 @@ foreach ($included_files as $filename) {ssss
 
     // all done, create summary
     if ($processed['total'] == 0) {
-        $messages[] = "Nothing needed to be synchronized.";    
+        $messages[] = "Nothing needed to be synchronized."; 
+      
     } else {
         foreach( array('created', 'updated', 'deleted') as $action ) {
             $messages[] = $processed[$action] . " contact(s) $action.";

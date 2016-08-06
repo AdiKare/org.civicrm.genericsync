@@ -22,7 +22,8 @@ class ContactService extends BaseService
      * @return ResultSet
      */
     public function getContacts($accessToken, array $params = array())
-    {
+    {   
+        crm_corr_error::debug('service getcontacts: ') ;
         $baseUrl = Config::get('endpoints.base_url') . Config::get('endpoints.contacts');
         $url = $this->buildUrl($baseUrl, $params);
 

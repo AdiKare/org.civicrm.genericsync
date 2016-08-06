@@ -85,8 +85,8 @@ class MailchimpService{
 
 	private $mailchimp ;
 	public function Pull(){ // Sync pull from service to CiviCRM	
-		require_once 'Mailchimp_Pull.php' ; 
 
+		require_once 'Mailchimp_Pull.php' ; 
 		$mailchimp = new CRM_Mailchimp_Form_Pull(); 
 
 		// deleted the functions which unsubscribes the contacts present in CiviCRM but not in Mailchimp 
@@ -123,10 +123,12 @@ class ConstantContactService{
 
 	//Calls the functions for Sync pull, Sync push and Dual Sync for Constant Contact. 
 	public function Pull(){	
+		//require_once 'ConstantContactSync.php' ;
+		//civicrm_api3_job_constant_contact_sync( $sync_params ) ;
 		$result = civicrm_api3('Job', 'constant_contact_sync', array(
   		'sequential' => 1,
 		));
-		crm_core_error::debug("Results:",$result) ; 
+		crm_core_error::debug("Results of the ctct sync:",$result) ; 
 		if($result['is_error'] > 0 ){ 
 			CRM_Core_Session::setStatus("Number of Errors: ".$result['is_error'],'Unsuccessful Sync'); 
 		}
@@ -140,6 +142,7 @@ class ConstantContactService{
 class GoogleAppsService{
 	//Calls the functions for Sync pull, Sync push and Dual Sync for Google Apps. 
 	public function Pull(){ 
+
 		$result = civicrm_api3('Job', 'googleapps_sync', array(
 	  	'sequential' => 1,
 		));	

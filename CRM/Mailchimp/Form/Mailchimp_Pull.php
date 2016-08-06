@@ -7,6 +7,8 @@
 // require_once "Mailchimp_Setting.php";
 // require_once "Mailchimp_Utils.php"; 
 
+require_once 'CRM/Mailchimp/Mailchimp_Pull.php' ;
+
 class CRM_Mailchimp_Form_Pull extends CRM_Core_Form {
 
   const QUEUE_NAME = 'mc-pull';
