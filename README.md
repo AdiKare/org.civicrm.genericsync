@@ -1,6 +1,6 @@
 # org.civicrm.genericsync
 
-This project is developed as a part of Google Summer of Code for the open source organization CiviCRM. This extension synchronizes the contacts through mapped list/groups of Mailchimp and Constant Contact wih CiviCRM. 
+This project is developed as a part of _**Google Summer of Code**_ for the open source organization CiviCRM. _**GernericSync**_ is an extension which synchronizes CiviCRM contacts through mapped list/groups of Mailchimp and Constant Contact. It also helps in providing a clutter-free environment by bringing together the synchronizing feature of different email marketing services under one roof. 
 
 ## Installation
 - Download the repository and place it in the CiviCRM extensions dir of your Drupal site.
