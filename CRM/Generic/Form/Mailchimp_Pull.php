@@ -22,7 +22,7 @@ class CRM_Mailchimp_Form_Pull extends CRM_Core_Form {
       if (!$groups) {
         return;
       }
-
+      
       $output_stats = array();
       foreach ($groups as $group_id => $details) {
         $list_stats = $stats[$details['list_id']];
@@ -32,6 +32,7 @@ class CRM_Mailchimp_Form_Pull extends CRM_Core_Form {
         );
       }
       $this->assign('stats', $output_stats);
+
     }
   }
 
@@ -101,7 +102,7 @@ class CRM_Mailchimp_Form_Pull extends CRM_Core_Form {
     }
     // Setup the Runner
 		$runnerParams = array(
-      'title' => ts('Import From Mailchimp'),
+      'title' => ts('Syncing with Mailchimp'),
       'queue' => $queue,
       'errorMode'=> CRM_Queue_Runner::ERROR_ABORT,
       'onEndUrl' => CRM_Utils_System::url(self::END_URL, self::END_PARAMS, TRUE, NULL, FALSE),
@@ -137,7 +138,7 @@ class CRM_Mailchimp_Form_Pull extends CRM_Core_Form {
       array($listID),
       "$identifier: Updating contacts in CiviCRM"
     ));
-
+    CRM_Core_Session::setStatus('Sync Completed',"Successful"); 
     return CRM_Queue_Task::TASK_SUCCESS;
   }
 

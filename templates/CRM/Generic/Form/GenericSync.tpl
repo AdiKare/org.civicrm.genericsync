@@ -30,11 +30,11 @@
 				<td>{$form.service.html}<br/>
 				</td>
 			</tr>
-			<tr class = "crm-generc-genericsync-direction-block">
+			<!-- <tr class = "crm-generc-genericsync-direction-block">
 				<td class="label">{$form.direction.label}</td>
 				<td>{$form.direction.html}<br/>
 				</td>
-			</tr>
+			</tr> -->
 		</table>
 	</div>
     <div class="crm-submit-buttons">
