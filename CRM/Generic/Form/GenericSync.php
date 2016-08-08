@@ -15,7 +15,6 @@ class CRM_Generic_Form_GenericSync extends CRM_Core_Form {
 	public function preProcess(){
 		$state = CRM_Utils_Request::retrieve('state', 'String', CRM_Core_DAO::$_nullObject, FALSE, 'tmp', 'GET');
 		if ($state == 'done') CRM_Core_Session::setStatus("Sync Completed","Successful :");
-		if ($state == 'error') CRM_Core_Session::setStatus("Sync Incomplete","Errors Encountered:");
 	}
 
 	public function buildQuickForm() {
@@ -44,7 +43,7 @@ class CRM_Generic_Form_GenericSync extends CRM_Core_Form {
 		}
 		else{
 			$object = new ContactSync($params['service']) ;
-			$object->Sync(); 
+			$object->sync(); 
 		}
 
 		// if($params['direction']==NULL){
@@ -70,8 +69,8 @@ class ContactSync{
 	}
 
 
-	public function Sync(){ 
-		$this->syncobject->Sync(); 
+	public function sync(){ 
+		$this->syncobject->sync(); 
 
 		// if($direction==1){ 
 		// 	$this->syncobject->Pull(); 
@@ -89,7 +88,7 @@ class ContactSync{
 class MailchimpService{
 
 	private $mailchimp ;
-	public function Sync(){ // Sync pull from service to CiviCRM	
+	public function sync(){ // Sync pull from service to CiviCRM	
 
 		require_once 'Mailchimp_Pull.php' ; 
 		$mailchimp = new CRM_Mailchimp_Form_Pull(); 
@@ -127,13 +126,13 @@ class MailchimpService{
 class ConstantContactService{ 
 
 	//Calls the functions for Sync pull, Sync push and Dual Sync for Constant Contact. 
-	public function Sync(){	
+	public function sync(){	
 		//require_once 'ConstantContactSync.php' ;
 		//civicrm_api3_job_constant_contact_sync( $sync_params ) ;
 		$result = civicrm_api3('Job', 'constant_contact_sync', array(
   		'sequential' => 1,
 		));
-		crm_core_error::debug("Results of the ctct sync:",$result) ;
+		// crm_core_error::debug("Results of the ctct sync:",$result) ;
 		if($result['is_error'] > 0 ){ 
 			CRM_Core_Session::setStatus("Number of Errors: ".$result['is_error'],'Unsuccessful Sync'); 
 		}
