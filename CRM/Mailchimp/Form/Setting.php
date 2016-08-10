@@ -1,5 +1,6 @@
 <?php
 
+require_once 'CRM/Mailchimp/Utils.php' ; 
 class CRM_Mailchimp_Form_Setting extends CRM_Core_Form {
 
   const 
@@ -12,7 +13,9 @@ class CRM_Mailchimp_Form_Setting extends CRM_Core_Form {
    * @access public
    */
   function preProcess() { 
+   
     $currentVer = CRM_Core_BAO_Domain::version(TRUE);
+
     //if current version is less than 4.4 dont save setting
     if (version_compare($currentVer, '4.4') < 0) {
       CRM_Core_Session::setStatus("You need to upgrade to version 4.4 or above to work with extension Mailchimp","Version:");
@@ -20,6 +23,7 @@ class CRM_Mailchimp_Form_Setting extends CRM_Core_Form {
   }  
   
   public static function formRule($params){
+   
     $currentVer = CRM_Core_BAO_Domain::version(TRUE);
     $errors = array();
     if (version_compare($currentVer, '4.4') < 0) {        
@@ -35,13 +39,17 @@ class CRM_Mailchimp_Form_Setting extends CRM_Core_Form {
    * @access public
    */
   public function buildQuickForm() {
+   
     $this->addFormRule(array('CRM_Mailchimp_Form_Setting', 'formRule'), $this);
     
-    CRM_Core_Resources::singleton()->addStyleFile('uk.co.vedaconsulting.mailchimp', 'css/mailchimp.css');
+
+    //CRM_Core_Resources::singleton()->addStyleFile('uk.co.vedaconsulting.mailchimp', 'css/mailchimp.css');
     
+
     $webhook_url = CRM_Utils_System::url('civicrm/mailchimp/webhook', 'reset=1',  TRUE, NULL, FALSE, TRUE);
     $this->assign( 'webhook_url', 'Webhook URL - '.$webhook_url);
     
+
     // Add the API Key Element
     $this->addElement('text', 'api_key', ts('API Key'), array(
       'size' => 48,
@@ -63,7 +71,9 @@ class CRM_Mailchimp_Form_Setting extends CRM_Core_Form {
         'name' => ts('Save & Test'),
       ),
     );
+
     $groups = CRM_Mailchimp_Utils::getGroupsToSync(array(), null, $membership_only = TRUE);
+
     foreach ($groups as $group_id => $details) {
       $list           = new Mailchimp_Lists(CRM_Mailchimp_Utils::mailchimp());
       $webhookoutput  = $list->webhooks($details['list_id']);
@@ -79,6 +89,7 @@ class CRM_Mailchimp_Form_Setting extends CRM_Core_Form {
   }
 
   public function setDefaultValues() {
+     
     $defaults = $details = array();
 
     $apiKey = CRM_Core_BAO_Setting::getItem(self::MC_SETTING_GROUP,
@@ -107,7 +118,7 @@ class CRM_Mailchimp_Form_Setting extends CRM_Core_Form {
    * @return None
    */
   public function postProcess() {
-    // Store the submitted values in an array.
+   // Store the submitted values in an array.
     $params = $this->controller->exportValues($this->_name);    
       
     // Save the API Key & Save the Security Key

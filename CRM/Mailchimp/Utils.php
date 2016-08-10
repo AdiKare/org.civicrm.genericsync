@@ -1,6 +1,5 @@
 <?php
-
-require_once "mailchimp/Mailchimp.php" ; 
+ 
 class CRM_Mailchimp_Utils {
 
   const MC_SETTING_GROUP = 'MailChimp Preferences';
@@ -33,14 +32,14 @@ class CRM_Mailchimp_Utils {
   static function getGroupsToSync($groupIDs = array(), $mc_list_id = null, $membership_only = FALSE) {
 
     $params = $groups = $temp = array();
-	
-	foreach ($groupIDs as $value) {
+
+	  foreach ($groupIDs as $value) {
         if($value){
           $temp[] = $value;
         }
     }
-	 
-	$groupIDs = $temp;
+
+    $groupIDs = $temp;
 
     if (!empty($groupIDs)) {
       $groupIDs = implode(',', $groupIDs);
@@ -63,10 +62,11 @@ class CRM_Mailchimp_Utils {
 
     $query  = "
       SELECT  entity_id, mc_list_id, mc_grouping_id, mc_group_id, is_mc_update_grouping, cg.title as civigroup_title, cg.saved_search_id, cg.children
- FROM    civicrm_value_mailchimp_settings mcs
+      FROM    civicrm_value_mailchimp_settings mcs
       INNER JOIN civicrm_group cg ON mcs.entity_id = cg.id
       WHERE $whereClause";
     $dao = CRM_Core_DAO::executeQuery($query, $params);
+
     while ($dao->fetch()) {
       $groups[$dao->entity_id] =
         array(
@@ -82,6 +82,7 @@ class CRM_Mailchimp_Utils {
     }
 
     CRM_Mailchimp_Utils::checkDebug('End-CRM_Mailchimp_Utils getGroupsToSync $groups', $groups);
+
 
     return $groups;
   }

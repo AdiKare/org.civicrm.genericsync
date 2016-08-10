@@ -53,6 +53,7 @@ class MailchimpSettings{
 		require_once "Mailchimp_Setting.php" ;
 		//$url = CRM_Utils_System::url('civicrm/generic/genericsettings/Service', 'reset=1', TRUE) ; 
 		//header( "Location: $url" );
+
 		$url = CRM_Utils_System::url('civicrm/generic/genericsettings/mailchimpSettings', 'reset=1', TRUE) ;
 	    CRM_Utils_System::redirect($url);
 	}
