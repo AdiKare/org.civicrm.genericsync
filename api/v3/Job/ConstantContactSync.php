@@ -30,9 +30,9 @@ foreach ($included_files as $filename) {ssss
 }
     exit;
     */
-
-    //CRM_Core_Session::setStatus($sync_params,'Sync Params') ;
-    //crm_core_error::debug("sync params ",$sync_params) ; 
+    
+    // CRM_Core_Session::setStatus($sync_params,'Sync Params') ;
+    crm_core_error::debug("syncing params ",$sync_params) ; 
     $custom_fields = array(
         'ctct_ind' => array(
             'title' => 'ConstantContact sync (by cividesk)',

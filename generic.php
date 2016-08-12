@@ -13,7 +13,7 @@ use Ctct\Exceptions\CtctException;
 
 function generic_civicrm_buildForm($formName, &$form){
   if($formName == "CRM_Group_Form_Edit"){
-    //CRM_Core_Session::setStatus("Inside pre","B") ; 
+    
     $settings = CRM_Sync_BAO_ConstantContact::getSettings();
     $cc_usertoken = CRM_Utils_Array::value('constantcontact_usertoken', $settings, false);
     $cc_apikey    = CRM_Utils_Array::value('constantcontact_apikey',    $settings, false);
@@ -45,14 +45,17 @@ function generic_civicrm_buildForm($formName, &$form){
     }
 
     if($form->getAction() == CRM_Core_Action::ADD OR $form->getAction() == CRM_Core_Action::UPDATE){
+      
       $lists = array();
       $params = array(
         'version' => 3,
         'sequential' => 1,
       );
       $lists = civicrm_api('Mailchimp', 'getlists', $params);
+     
       if(!$lists['is_error']){
         // Add form elements
+        CRM_Core_Session::setStatus("no list error ","Hi : ") ; 
         $form->add('select', 'mailchimp_list', ts('Mailchimp List'), array('' => '- select -') + $lists['values'] , FALSE );
         $form->add('select', 'mailchimp_group', ts('Mailchimp Group'), array('' => '- select -') , FALSE );
 
@@ -94,6 +97,7 @@ function generic_civicrm_buildForm($formName, &$form){
             $form->assign('mailchimp_list_id' ,  $mcDetails[$groupId]['list_id']);
           } else {
             // defaults for a new group
+            CRM_Core_Session::setStatus("list error ","Hi : ") ; 
             $defaults['mc_integration_option'] = 0;
             $defaults['is_mc_update_grouping'] = 0;
             $form->setDefaults($defaults);  
@@ -226,12 +230,12 @@ function generic_civicrm_pre( $op, $objectName, $id, &$params ) {
 }
 
 function generic_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
- // if($formName == "CRM_Group_Form_Edit"){
-  //   $result = civicrm_api3('Job', 'execute', array(
-  //     'sequential' => 1,
-  //     'api_action' => "constant_contact_sync",
-  //   ));
-  // }
+ if($formName == "CRM_Group_Form_Edit"){
+    $result = civicrm_api3('Job', 'execute', array(
+      'sequential' => 1,
+      'api_action' => "constant_contact_sync",
+    ));
+  }
 
 
   /***** NO BULK EMAILS (User Opt Out) *****/

@@ -40,9 +40,14 @@ class CRM_Generic_Form_Settings extends CRM_Core_Form {
 		
 		$params = $this->controller->exportValues($this->_name);
 
-		$class = $params['service']."Settings";
-		$this->object = new $class();	
-		$this->object->execute();
+		if($params['service']==NULL){ 
+			CRM_Core_Session::setStatus("You need to choose one of the service","Choose Service : ");
+		}
+		else{
+			$class = $params['service']."Settings";
+			$this->object = new $class();	
+			$this->object->execute();
+		}
 	}
 }
 
