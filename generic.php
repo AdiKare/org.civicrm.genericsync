@@ -230,12 +230,12 @@ function generic_civicrm_pre( $op, $objectName, $id, &$params ) {
 }
 
 function generic_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
- if($formName == "CRM_Group_Form_Edit"){
-    $result = civicrm_api3('Job', 'execute', array(
-      'sequential' => 1,
-      'api_action' => "constant_contact_sync",
-    ));
-  }
+ // if($formName == "CRM_Group_Form_Edit"){
+ //    $result = civicrm_api3('Job', 'execute', array(
+ //      'sequential' => 1,
+ //      'api_action' => "constant_contact_sync",
+ //    ));
+ //  }
 
 
   /***** NO BULK EMAILS (User Opt Out) *****/

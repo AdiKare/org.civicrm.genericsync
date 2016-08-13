@@ -23,15 +23,20 @@ class ContactService extends BaseService
      */
     public function getContacts($accessToken, array $params = array())
     {   
-        crm_corr_error::debug('service getcontacts: ') ;
+        
         $baseUrl = Config::get('endpoints.base_url') . Config::get('endpoints.contacts');
         $url = $this->buildUrl($baseUrl, $params);
 
         $response = parent::getRestClient()->get($url, parent::getHeaders($accessToken));
         $body = json_decode($response->body, true);
         $contacts = array();
+        if (empty($body['results'])) {
+            return;
+        }
         foreach ($body['results'] as $contact) {
-            $contacts[] = Contact::create($contact);
+            if (is_array($contact)) {
+                $contacts[] = Contact::create($contact);
+            }
         }
         return new ResultSet($contacts, $body['meta']);
     }

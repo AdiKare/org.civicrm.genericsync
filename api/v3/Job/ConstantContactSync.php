@@ -31,8 +31,8 @@ foreach ($included_files as $filename) {ssss
     exit;
     */
     
-    // CRM_Core_Session::setStatus($sync_params,'Sync Params') ;
-    crm_core_error::debug("syncing params ",$sync_params) ; 
+   
+    // crm_core_error::debug("syncing params ",$sync_params) ; 
     $custom_fields = array(
         'ctct_ind' => array(
             'title' => 'ConstantContact sync (by cividesk)',
@@ -95,10 +95,12 @@ foreach ($included_files as $filename) {ssss
     if (empty($sync_groups)) {
         CRM_Core_Session::setStatus($sync_groups,"Sync grooups") ;
       return civicrm_api3_create_success( array('No groups defined for synching') );
+
     }
 
     // build plain and smart groups lists, refresh cache for all smart groups
     $plain_group_list = $smart_group_list = array();
+    
     foreach ( $sync_groups as $gid => $group ) {
       if (CRM_Utils_Array::value('saved_search_id', $group)) {
         $smart_group_list[] = $gid;
@@ -114,12 +116,15 @@ foreach ($included_files as $filename) {ssss
     $plain_group_list = implode(',', $plain_group_list);
     $smart_group_list = implode(',', $smart_group_list);
 
+
     $settings = CRM_Sync_BAO_ConstantContact::getSettings();
     $last_sync    = CRM_Utils_Array::value('last_sync',                 $settings, '2000-01-01 00:00:00');
     $cc_username  = CRM_Utils_Array::value('constantcontact_username',  $settings, false);
     $cc_usertoken = CRM_Utils_Array::value('constantcontact_usertoken', $settings, false);
     $cc_apikey    = CRM_Utils_Array::value('constantcontact_apikey',    $settings, false);
     $cc_timeout   = CRM_Utils_Array::value('constantcontact_timeout',   $settings, 0);
+
+    
     if ( $cc_username ) {
       define( 'CTCT_USERNAME',  $cc_username );
     }
@@ -190,18 +195,22 @@ foreach ($included_files as $filename) {ssss
         ORDER BY
             s.modified_date ASC";
     $dao = CRM_Core_DAO::executeQuery( $querySync );
+   
     // Check if all the constants are defined
     if (!defined('CTCT_APIKEY') || !defined('CTCT_USERNAME') || !defined('CTCT_USERTOKEN') || !defined('CTCT_TIMEOUT')) {
       return civicrm_api3_create_error('Missing required CTCT constants in civicrm.settings.php');
     }
     $ConstantContact = new ConstantContact(CTCT_APIKEY);
-
+ 
     $messages  = array();
     $processed = array('total' => 0, 'created' => 0, 'updated' => 0, 'deleted' => 0);
+
     while ($dao->fetch() && ($processed['total'] < 100)) {
       $result = false; // Will contain resulting CtCt Contact if sync is successful
+      
       $contact = $dao->toArray();
-      // Saved last_sync date - DO NOT CHANGE the 'ORDER BY s.modified_date ASC' above
+      //crm_core_error::debug("contact = ",$contact) ;
+      // Saved last_sync date - DO NOT CHANGE the 'ORDER BY s.modified_date ASC' above 
       $last_sync = CRM_Utils_Array::value('modified_date', $contact, $last_sync);
       try {
         if (empty($contact['email']) || empty($contact['group_list']) || $contact['is_deleted']) {
@@ -211,6 +220,7 @@ foreach ($included_files as $filename) {ssss
             else { // contact needs to be unsubscribed or deleted in Constant Contact
                 $NewContact = civi2ctct( $contact, $sync_groups );
                 usleep(CTCT_TIMEOUT);
+
                 $OldContact = $ConstantContact->getContact(CTCT_USERTOKEN, $contact['ctct_id']);
                 if ($OldContact->id != $contact['ctct_id']) {
                     // could not find contact to delete in CtCt
@@ -239,6 +249,7 @@ foreach ($included_files as $filename) {ssss
             // so we will need to be created or modified in CtCt
             $NewContact = civi2ctct( $contact, $sync_groups );
             if (empty($contact['ctct_id'])) {
+                //crm_core_error::debug('contact never synched with ctct ',$contact) ; 
                 // contact was never synch'ed with CtCt
                 usleep(CTCT_TIMEOUT);                
                 $Results = $ConstantContact->getContactByEmail(CTCT_USERTOKEN, $contact['email']);
@@ -255,6 +266,7 @@ foreach ($included_files as $filename) {ssss
                 } 
                 else {
                     // contact really needs to be created in CtCt
+                    //crm_core_error::debug('contact need to be really created') ; 
                     usleep(CTCT_TIMEOUT);
                     if ($result = $ConstantContact->addContact(CTCT_USERTOKEN, $NewContact))
                         $processed['created'] ++;
@@ -283,6 +295,7 @@ foreach ($included_files as $filename) {ssss
             }
         }
         if ($result) {
+            //crm_core_error::debug("Resultings  = ",$result) ;
             // set it here because we want to catch ALL sync actions
             if (is_a($result, 'CtCt\Components\Contacts\Contact')) {
               $contact['ctct_id'] = $result->id; // will also be null if CtCt contact has been deleted
@@ -312,18 +325,22 @@ foreach ($included_files as $filename) {ssss
       } catch (Exception $e) {
         $messages[] = $e->getMessage();
         // Still must be counted as processed to limit processing time
+        //crm_core_error::debug('exception enountered = ',$messages) ;
         $processed['total'] ++;
       }
     }
 
-    // Change frequency of job until the job is finished
+    // Change frequency of job until the job is finishedx
     $job = civicrm_api3('Job', 'getsingle', array(
       'sequential' => 1,
       'api_action' => "constant_contact_sync",
     ));
+    //crm_core_error::debug("job = ",$job);
     //Run query again to make sure no contacts are left over
     $dao = CRM_Core_DAO::executeQuery( $querySync );
+    //crm_core_error::debug("dao querry = ",$dao) ; 
     if( $dao->fetch() ){
+       // crm_core_error::debug("inside dao "); 
       //if so set the scheudled job to run always
       $result = civicrm_api3('Job', 'create', array(
         'sequential' => 1,

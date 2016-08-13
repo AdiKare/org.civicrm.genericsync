@@ -118,7 +118,8 @@ class CRM_Mailchimp_Form_Setting extends CRM_Core_Form {
    * @return None
    */
   public function postProcess() {
-   // Store the submitted values in an array.
+    echo "inside postprocess " ;
+    // Store the submitted values in an array.
     $params = $this->controller->exportValues($this->_name);    
       
     // Save the API Key & Save the Security Key
