@@ -87,6 +87,7 @@ class RestClient implements RestClientInterface
         $response = CurlResponse::create(curl_exec($curl), curl_getinfo($curl), curl_error($curl));
         curl_close($curl);
 
+
         // check if any errors were returned
         $body = json_decode($response->body, true);
         if (isset($body[0]) && array_key_exists('error_key', $body[0])) {

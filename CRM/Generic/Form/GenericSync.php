@@ -145,7 +145,7 @@ class ConstantContactService{
 
 class GoogleAppsService{
 	//Calls the functions for Sync pull, Sync push and Dual Sync for Google Apps. 
-	public function Sync(){ 
+	public function sync(){ 
 
 		$result = civicrm_api3('Job', 'googleapps_sync', array(
 	  	'sequential' => 1,

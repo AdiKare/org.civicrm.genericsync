@@ -73,3 +73,11 @@ class ConstantContactSettings{
 	
 	// public function execute(){
 }
+
+class GoogleAppsSettings{
+
+	public function execute(){ 
+		$url = CRM_Utils_System::url('civicrm/generic/genericsettings/googleappsSettings', 'reset=1', TRUE) ;
+		CRM_Utils_System::redirect($url); 
+	}
+}

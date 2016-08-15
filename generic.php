@@ -5,6 +5,7 @@ require_once 'generic.civix.php';
 require_once 'vendor/mailchimp/Mailchimp.php';
 require_once 'vendor/mailchimp/Mailchimp/Lists.php';
 require_once 'packages/Ctct/autoload.php';
+require_once 'cividesk.ext.php';
 use Ctct\ConstantContact;
 use Ctct\Components\Contacts\Contact;
 use Ctct\Components\Contacts\ContactList;
@@ -55,7 +56,7 @@ function generic_civicrm_buildForm($formName, &$form){
      
       if(!$lists['is_error']){
         // Add form elements
-        CRM_Core_Session::setStatus("no list error ","Hi : ") ; 
+        
         $form->add('select', 'mailchimp_list', ts('Mailchimp List'), array('' => '- select -') + $lists['values'] , FALSE );
         $form->add('select', 'mailchimp_group', ts('Mailchimp Group'), array('' => '- select -') , FALSE );
 
@@ -97,7 +98,7 @@ function generic_civicrm_buildForm($formName, &$form){
             $form->assign('mailchimp_list_id' ,  $mcDetails[$groupId]['list_id']);
           } else {
             // defaults for a new group
-            CRM_Core_Session::setStatus("list error ","Hi : ") ; 
+            
             $defaults['mc_integration_option'] = 0;
             $defaults['is_mc_update_grouping'] = 0;
             $form->setDefaults($defaults);  
@@ -229,13 +230,14 @@ function generic_civicrm_pre( $op, $objectName, $id, &$params ) {
   }
 }
 
-function generic_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
- // if($formName == "CRM_Group_Form_Edit"){
- //    $result = civicrm_api3('Job', 'execute', array(
- //      'sequential' => 1,
- //      'api_action' => "constant_contact_sync",
- //    ));
- //  }
+function generic_civicrm_post( $op, $objectName, $objectId, &$objectRef,$formName, &$form) {
+ if($formName == "CRM_Group_Form_Edit"){
+    $result = civicrm_api3('Job', 'execute', array(
+      'sequential' => 1,
+      'api_action' => "constant_contact_sync",
+    ));
+    crm_core_error::debug('$results from main = ',$result) ;
+  }
 
 
   /***** NO BULK EMAILS (User Opt Out) *****/
@@ -336,6 +338,32 @@ function generic_civicrm_xmlMenu(&$files) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
  */
 function generic_civicrm_install() {
+  googleapps_civicrm_config(CRM_Core_Config::singleton());
+  require_once 'CRM/Sync/BAO/GoogleApps.php';
+  // Create sync queue table if not exists
+  $query = "
+    CREATE TABLE IF NOT EXISTS `" . CRM_Sync_BAO_GoogleApps::GOOGLEAPPS_QUEUE_TABLE_NAME . "` (
+          `id` int(10) NOT NULL AUTO_INCREMENT,
+          `civicrm_contact_id` int(10) NOT NULL,
+          `google_contact_id` varchar(32) DEFAULT NULL,
+          `first_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+          `last_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+          `organization` varchar(128) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+          `job_title` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+          `email` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+          `email_location_id` int(10) UNSIGNED DEFAULT NULL,
+          `email_is_primary` tinyint(4) DEFAULT '0',
+          `phone` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+          `phone_ext` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+          `phone_type_id` int(10) UNSIGNED DEFAULT NULL,
+          `phone_location_id` int(10) UNSIGNED DEFAULT NULL,
+          `phone_is_primary` tinyint(4) DEFAULT '0',
+          `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+      PRIMARY KEY (`id`),
+      KEY `civicrm_contact_id` (`civicrm_contact_id`),
+      KEY `google_contact_id` (`google_contact_id`)
+    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+  CRM_Core_DAO::executeQuery($query);
   _generic_civix_civicrm_install();
 }
 
@@ -345,6 +373,25 @@ function generic_civicrm_install() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function generic_civicrm_uninstall() {
+  googleapps_civicrm_config(CRM_Core_Config::singleton());
+  require_once 'CRM/Sync/BAO/GoogleApps.php';
+  // Delete scheduled job
+  $scheduledJob = CRM_Sync_BAO_GoogleApps::get_scheduledJob();
+  $scheduledJob->delete();
+  // Delete custom group & fields
+  $custom_group = CRM_Sync_BAO_GoogleApps::get_customGroup();
+  $custom_fields = CRM_Sync_BAO_GoogleApps::get_customFields($custom_group);
+  foreach ($custom_fields as $custom_field) {
+    $params = array('version' => 3, 'id' => $custom_field['id']);
+    $result = civicrm_api('CustomField', 'delete', $params);
+  }
+  $params = array('version' => 3, 'id' => $custom_group['id']);
+  $result = civicrm_api('CustomGroup', 'delete', $params);
+  // Drop sync queue table
+  $query = "DROP TABLE IF EXISTS `" . CRM_Sync_BAO_GoogleApps::GOOGLEAPPS_QUEUE_TABLE_NAME . "`;";
+  CRM_Core_DAO::executeQuery($query);
+  // Delete all settings
+  CRM_Core_BAO_Setting::deleteItem(CRM_Sync_BAO_GoogleApps::GOOGLEAPPS_PREFERENCES_NAME);
   _generic_civix_civicrm_uninstall();
 }
 
@@ -354,6 +401,18 @@ function generic_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function generic_civicrm_enable() {
+  googleapps_civicrm_config(CRM_Core_Config::singleton());
+  $params = CRM_Sync_BAO_GoogleApps::get_customGroup();
+  $params['version'] = 3;
+  $params['is_active'] = 1;
+  $result = civicrm_api('CustomGroup', 'create', $params);
+  // Create custom fields in this group
+  $custom_fields = CRM_Sync_BAO_GoogleApps::get_customFields($params['id']);
+  // Reminder to go to the configuration screen
+  CRM_Core_Session::setStatus(
+    ts('Extension enabled. Please go to the <a href="%1">setup screen</a> to configure it.',
+      array(1 => CRM_Utils_System::url('civicrm/admin/sync/googleapps')))
+  );
   _generic_civix_civicrm_enable();
 }
 
@@ -363,6 +422,10 @@ function generic_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function generic_civicrm_disable() {
+  $params = CRM_Sync_BAO_GoogleApps::get_customGroup();
+  $params['version'] = 3;
+  $params['is_active'] = 0;
+  $result = civicrm_api('CustomGroup', 'create', $params);
   _generic_civix_civicrm_disable();
 }
 

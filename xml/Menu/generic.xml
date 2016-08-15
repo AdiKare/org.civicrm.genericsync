@@ -30,6 +30,12 @@
     <title>Constant Contact Setting</title>
     <access_arguments>administer CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/generic/genericsettings/googleappsSettings</path>
+    <page_callback>CRM_Admin_Form_Setting_GoogleApps</page_callback>
+    <title>Google Apps Setting</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
   
  <!--  <item>
     <path>civicrm/generic/setting</path>

@@ -91,9 +91,9 @@ foreach ($included_files as $filename) {ssss
     $custom_fields = get_or_create_custom_fields($custom_fields);
     $sync_groups = get_sync_groups($custom_fields);
 
-    // No need to continue if nothing to sync
+    // No need to continue if nothing to sync 
     if (empty($sync_groups)) {
-        CRM_Core_Session::setStatus($sync_groups,"Sync grooups") ;
+       
       return civicrm_api3_create_success( array('No groups defined for synching') );
 
     }
@@ -209,7 +209,7 @@ foreach ($included_files as $filename) {ssss
       $result = false; // Will contain resulting CtCt Contact if sync is successful
       
       $contact = $dao->toArray();
-      //crm_core_error::debug("contact = ",$contact) ;
+      //crm_core_error::debug("COntacts = ",$contact) ;
       // Saved last_sync date - DO NOT CHANGE the 'ORDER BY s.modified_date ASC' above 
       $last_sync = CRM_Utils_Array::value('modified_date', $contact, $last_sync);
       try {
@@ -221,6 +221,7 @@ foreach ($included_files as $filename) {ssss
                 $NewContact = civi2ctct( $contact, $sync_groups );
                 usleep(CTCT_TIMEOUT);
 
+                crm_core_error::debug("contact neeeds to be deleted in cc") ; 
                 $OldContact = $ConstantContact->getContact(CTCT_USERTOKEN, $contact['ctct_id']);
                 if ($OldContact->id != $contact['ctct_id']) {
                     // could not find contact to delete in CtCt
@@ -247,6 +248,7 @@ foreach ($included_files as $filename) {ssss
         } else {
             // contact is subscribed to at least one synched list
             // so we will need to be created or modified in CtCt
+            //crm_core_error::debug("contact is subscribed to atleast one synched list ") ;
             $NewContact = civi2ctct( $contact, $sync_groups );
             if (empty($contact['ctct_id'])) {
                 //crm_core_error::debug('contact never synched with ctct ',$contact) ; 
@@ -276,6 +278,7 @@ foreach ($included_files as $filename) {ssss
                 // we are searching with CtCt_Id rather than email as this will allow
                 // to change the email address in Civi and have this port over to CtCt
                 usleep(CTCT_TIMEOUT);
+                //crm_core_error::debug("contact needs to be updated") ; 
                 $OldContact = $ConstantContact->getContact(CTCT_USERTOKEN, $contact['ctct_id']);
                 if ($OldContact->id != $contact['ctct_id']) {
                     // cannot locate contact in CtCt -> recreate
@@ -295,7 +298,7 @@ foreach ($included_files as $filename) {ssss
             }
         }
         if ($result) {
-            //crm_core_error::debug("Resultings  = ",$result) ;
+           // crm_core_error::debug("Resultings  = ",$result) ;
             // set it here because we want to catch ALL sync actions
             if (is_a($result, 'CtCt\Components\Contacts\Contact')) {
               $contact['ctct_id'] = $result->id; // will also be null if CtCt contact has been deleted
@@ -340,7 +343,7 @@ foreach ($included_files as $filename) {ssss
     $dao = CRM_Core_DAO::executeQuery( $querySync );
     //crm_core_error::debug("dao querry = ",$dao) ; 
     if( $dao->fetch() ){
-       // crm_core_error::debug("inside dao "); 
+      // crm_core_error::debug("inside dao "); 
       //if so set the scheudled job to run always
       $result = civicrm_api3('Job', 'create', array(
         'sequential' => 1,
