@@ -132,7 +132,7 @@ class ConstantContactService{
 		$result = civicrm_api3('Job', 'constant_contact_sync', array(
   		'sequential' => 1,
 		));
-		crm_core_error::debug("Results of the ctct sync:",$result) ;
+		//crm_core_error::debug("Results of the ctct sync:",$result) ;
 		if($result['is_error'] > 0 ){ 
 			CRM_Core_Session::setStatus("Number of Errors: ".$result['is_error'],'Unsuccessful Sync'); 
 		}
@@ -151,7 +151,6 @@ class GoogleAppsService{
 	  	'sequential' => 1,
 		));	
 
-		echo $result; 
 		if($result['is_error']>0){ 
 			CRM_Core_Session::setStatus("Number of Errors: ".$result['is_error'],'Unsuccessful Sync'); 
 		}

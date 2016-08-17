@@ -230,14 +230,14 @@ function generic_civicrm_pre( $op, $objectName, $id, &$params ) {
   }
 }
 
-function generic_civicrm_post( $op, $objectName, $objectId, &$objectRef,$formName, &$form) {
- if($formName == "CRM_Group_Form_Edit"){
-    $result = civicrm_api3('Job', 'execute', array(
-      'sequential' => 1,
-      'api_action' => "constant_contact_sync",
-    ));
-    crm_core_error::debug('$results from main = ',$result) ;
-  }
+function generic_civicrm_post( $op, $objectName, $objectId, &$objectRef) {
+ // if($formName == "CRM_Group_Form_Edit"){
+ //    $result = civicrm_api3('Job', 'execute', array(
+ //      'sequential' => 1,
+ //      'api_action' => "constant_contact_sync",
+ //    ));
+ //    crm_core_error::debug('$results from main = ',$result) ;
+ //  }
 
 
   /***** NO BULK EMAILS (User Opt Out) *****/
@@ -338,7 +338,7 @@ function generic_civicrm_xmlMenu(&$files) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
  */
 function generic_civicrm_install() {
-  googleapps_civicrm_config(CRM_Core_Config::singleton());
+  //googleapps_civicrm_config(CRM_Core_Config::singleton());
   require_once 'CRM/Sync/BAO/GoogleApps.php';
   // Create sync queue table if not exists
   $query = "
@@ -373,7 +373,7 @@ function generic_civicrm_install() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function generic_civicrm_uninstall() {
-  googleapps_civicrm_config(CRM_Core_Config::singleton());
+   generic_civicrm_config(CRM_Core_Config::singleton());
   require_once 'CRM/Sync/BAO/GoogleApps.php';
   // Delete scheduled job
   $scheduledJob = CRM_Sync_BAO_GoogleApps::get_scheduledJob();
@@ -391,7 +391,7 @@ function generic_civicrm_uninstall() {
   $query = "DROP TABLE IF EXISTS `" . CRM_Sync_BAO_GoogleApps::GOOGLEAPPS_QUEUE_TABLE_NAME . "`;";
   CRM_Core_DAO::executeQuery($query);
   // Delete all settings
-  CRM_Core_BAO_Setting::deleteItem(CRM_Sync_BAO_GoogleApps::GOOGLEAPPS_PREFERENCES_NAME);
+  //CRM_Core_BAO_Setting::deleteItem(CRM_Sync_BAO_GoogleApps::GOOGLEAPPS_PREFERENCES_NAME);
   _generic_civix_civicrm_uninstall();
 }
 
@@ -401,7 +401,7 @@ function generic_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function generic_civicrm_enable() {
-  googleapps_civicrm_config(CRM_Core_Config::singleton());
+  generic_civicrm_config(CRM_Core_Config::singleton());
   $params = CRM_Sync_BAO_GoogleApps::get_customGroup();
   $params['version'] = 3;
   $params['is_active'] = 1;
