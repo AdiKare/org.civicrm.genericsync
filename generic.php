@@ -409,10 +409,10 @@ function generic_civicrm_enable() {
   // Create custom fields in this group
   $custom_fields = CRM_Sync_BAO_GoogleApps::get_customFields($params['id']);
   // Reminder to go to the configuration screen
-  CRM_Core_Session::setStatus(
-    ts('Extension enabled. Please go to the <a href="%1">setup screen</a> to configure it.',
-      array(1 => CRM_Utils_System::url('civicrm/admin/sync/googleapps')))
-  );
+  // CRM_Core_Session::setStatus(
+  //   ts('Extension enabled. Please go to the <a href="%1">setup screen</a> to configure it.',
+  //     array(1 => CRM_Utils_System::url('civicrm/admin/sync/googleapps')))
+  // );
   _generic_civix_civicrm_enable();
 }
 
