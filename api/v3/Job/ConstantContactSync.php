@@ -21,18 +21,6 @@ use Ctct\Exceptions\CtctException;
 function civicrm_api3_job_constant_contact_sync( $sync_params )
 {
 
-/*    echo '<pre>';
-    echo get_include_path(); 
-    $included_files = get_included_files();
-
-foreach ($included_files as $filename) {ssss
-    echo "$filename"; echo "<br/>";
-}
-    exit;
-    */
-    
-   
-    // crm_core_error::debug("syncing params ",$sync_params) ; 
     $custom_fields = array(
         'ctct_ind' => array(
             'title' => 'ConstantContact sync (by cividesk)',
@@ -210,7 +198,6 @@ foreach ($included_files as $filename) {ssss
       $result = false; // Will contain resulting CtCt Contact if sync is successful
       
       $contact = $dao->toArray();
-      //crm_core_error::debug("COntacts = ",$contact) ;
       // Saved last_sync date - DO NOT CHANGE the 'ORDER BY s.modified_date ASC' above 
       $last_sync = CRM_Utils_Array::value('modified_date', $contact, $last_sync);
       try {
@@ -247,10 +234,10 @@ foreach ($included_files as $filename) {ssss
         } else {
             // contact is subscribed to at least one synched list
             // so we will need to be created or modified in CtCt
-            //crm_core_error::debug("contact is subscribed to atleast one synched list ") ;
+            
             $NewContact = civi2ctct( $contact, $sync_groups );
             if (empty($contact['ctct_id'])) {
-                //crm_core_error::debug('contact never synched with ctct ',$contact) ; 
+                
                 // contact was never synch'ed with CtCt
                 usleep(CTCT_TIMEOUT);                
                 $Results = $ConstantContact->getContactByEmail(CTCT_USERTOKEN, $contact['email']);
@@ -267,7 +254,7 @@ foreach ($included_files as $filename) {ssss
                 } 
                 else {
                     // contact really needs to be created in CtCt
-                    //crm_core_error::debug('contact need to be really created') ; 
+                    
                     usleep(CTCT_TIMEOUT);
                     if ($result = $ConstantContact->addContact(CTCT_USERTOKEN, $NewContact))
                         $processed['created'] ++;
@@ -277,7 +264,7 @@ foreach ($included_files as $filename) {ssss
                 // we are searching with CtCt_Id rather than email as this will allow
                 // to change the email address in Civi and have this port over to CtCt
                 usleep(CTCT_TIMEOUT);
-                //crm_core_error::debug("contact needs to be updated") ; 
+                
                 $OldContact = $ConstantContact->getContact(CTCT_USERTOKEN, $contact['ctct_id']);
                 if ($OldContact->id != $contact['ctct_id']) {
                     // cannot locate contact in CtCt -> recreate
@@ -297,7 +284,7 @@ foreach ($included_files as $filename) {ssss
             }
         }
         if ($result) {
-           // crm_core_error::debug("Resultings  = ",$result) ;
+           
             // set it here because we want to catch ALL sync actions
             if (is_a($result, 'CtCt\Components\Contacts\Contact')) {
               $contact['ctct_id'] = $result->id; // will also be null if CtCt contact has been deleted
@@ -327,7 +314,7 @@ foreach ($included_files as $filename) {ssss
       } catch (Exception $e) {
         $messages[] = $e->getMessage();
         // Still must be counted as processed to limit processing time
-        //crm_core_error::debug('exception enountered = ',$messages) ;
+        
         $processed['total'] ++;
       }
     }
@@ -337,12 +324,12 @@ foreach ($included_files as $filename) {ssss
       'sequential' => 1,
       'api_action' => "constant_contact_sync",
     ));
-    //crm_core_error::debug("job = ",$job);
+   
     //Run query again to make sure no contacts are left over
     $dao = CRM_Core_DAO::executeQuery( $querySync );
-    //crm_core_error::debug("dao querry = ",$dao) ; 
+     
     if( $dao->fetch() ){
-      // crm_core_error::debug("inside dao "); 
+      
       //if so set the scheudled job to run always
       $result = civicrm_api3('Job', 'create', array(
         'sequential' => 1,
