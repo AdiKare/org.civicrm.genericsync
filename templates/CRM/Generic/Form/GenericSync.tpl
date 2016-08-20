@@ -20,7 +20,7 @@
 
 	<div class="crm-accordion-header">
       <div class="icon crm-accordion-pointer"></div> 
-      {ts}SYCNING OPTIONS{/ts}
+      {ts}SYNCING OPTIONS{/ts}
     </div><!-- /.crm-accordion-header -->
 	<div class="crm-accordion-body">
 

@@ -31,9 +31,6 @@ class CRM_Generic_Form_GenericSync extends CRM_Core_Form {
 	    $serviceoptions = array('Mailchimp'=>ts('Mailchimp '),'ConstantContact'=>ts('Constant Contact '),
 	    	'GoogleApps'=>ts('Google Apps')); 
 	    $this->addRadio('service',ts('Service'),$serviceoptions,NULL) ; 
-	    
-	    // $syncdirection = array(1=>ts('Import '),2=>ts('Export '),3=>ts('Dual Sync'));
-	    // $this->addRadio('direction',ts('Sync Direction'),$syncdirection,NULL) ;
 	}
 
 	public function postProcess(){

@@ -205,6 +205,7 @@ foreach ($included_files as $filename) {ssss
     $messages  = array();
     $processed = array('total' => 0, 'created' => 0, 'updated' => 0, 'deleted' => 0);
 
+    
     while ($dao->fetch() && ($processed['total'] < 100)) {
       $result = false; // Will contain resulting CtCt Contact if sync is successful
       
@@ -219,9 +220,7 @@ foreach ($included_files as $filename) {ssss
                 continue;
             else { // contact needs to be unsubscribed or deleted in Constant Contact
                 $NewContact = civi2ctct( $contact, $sync_groups );
-                usleep(CTCT_TIMEOUT);
-
-                crm_core_error::debug("contact neeeds to be deleted in cc") ; 
+                usleep(CTCT_TIMEOUT); 
                 $OldContact = $ConstantContact->getContact(CTCT_USERTOKEN, $contact['ctct_id']);
                 if ($OldContact->id != $contact['ctct_id']) {
                     // could not find contact to delete in CtCt
@@ -233,7 +232,7 @@ foreach ($included_files as $filename) {ssss
                     $NewContact = merge_contact( $NewContact, $OldContact );
                     if (empty($NewContact->lists)) { // delete in CtCt
                         usleep(CTCT_TIMEOUT);
-                        if ($ConstantContact->deleteContact(CTCT_USERTOKEN, $NewContact)) {
+                        if ($NewContact->status != 'REMOVED' && $ConstantContact->deleteContact(CTCT_USERTOKEN, $NewContact)) {
                           $processed['deleted'] ++;
                           $result = new Contact(); // So id is NULL for saving back into CiviCRM
                         }
