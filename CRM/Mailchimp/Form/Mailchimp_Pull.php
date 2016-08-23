@@ -1,11 +1,4 @@
-<?php
-/**
- * @file
- * This provides the Sync Pull from Mailchimp to CiviCRM form.
- */
-
-// require_once "Mailchimp_Setting.php";
-// require_once "Mailchimp_Utils.php"; 
+<?php 
 
 class CRM_Mailchimp_Form_Pull extends CRM_Core_Form {
 

@@ -13,11 +13,7 @@
         </td>
       </tr>
     </table>
-    <!-- <div id= "servicesettings">
-    &nbsp;&nbsp;&nbsp;&nbsp;Service:&nbsp;&nbsp; 
-    <input type= "radio" value="Mailchimp">Mailchimp</input>
-      <input type= "radio" value="Constant">Constant</input>
-        <input type= "radio" value="Google">Google</input> -->
+    
   </div>
     <div class="crm-submit-buttons">
       {include file="CRM/common/formButtons.tpl" location="top"}

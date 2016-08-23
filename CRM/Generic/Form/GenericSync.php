@@ -42,14 +42,6 @@ class CRM_Generic_Form_GenericSync extends CRM_Core_Form {
 			$object = new ContactSync($params['service']) ;
 			$object->sync(); 
 		}
-
-		// if($params['direction']==NULL){
-		// 	CRM_Core_Session::setStatus("You need to select the Sync Direction","Sync Direction:");
-		// }
-		
-		// else{
-		// 	$object->SyncDirection($params['direction']) ; 
-		// }
 	}
 
 
@@ -69,15 +61,6 @@ class ContactSync{
 	public function sync(){ 
 		$this->syncobject->sync(); 
 
-		// if($direction==1){ 
-		// 	$this->syncobject->Pull(); 
-		// }
-		// elseif($direction==2){ 
-		// 	$this->syncobject->Push(); 
-		// }
-		// else{ 
-		// 	$this->syncobject->DualSync(); 
-		// }
 	}
 	
 }
@@ -85,7 +68,7 @@ class ContactSync{
 class MailchimpService{
 
 	private $mailchimp ;
-	public function sync(){ // Sync pull from service to CiviCRM	
+	public function sync(){ // Sync service with CiviCRM	
 
 		require_once 'Mailchimp_Pull.php' ; 
 		$mailchimp = new CRM_Mailchimp_Form_Pull(); 
@@ -94,42 +77,15 @@ class MailchimpService{
 		$mailchimp->postProcess(); 
 	}
 
-	// public function Push(){ // Sync Push from CiviCRM to service 
-	// 	require_once 'Mailchimp_Sync.php';
-
-	// 	$mailchimp = new CRM_Mailchimp_Form_Sync(); 
-
-	// 	//deleted the function which unsubscribes the contacts present in Mailchimp but not in CiviCRM
-	// 	return $mailchimp->postProcess() ; 
-	// }
-
-	// public function DualSync(){// Sync in both directions. Doesn't unsubscribe contacts. Both account add contact that are not present in them.
-		
-	// 	require_once 'Mailchimp_Pull.php' ;
-	// 	require_once 'Mailchimp_Sync.php' ;
-
-	// 	$mailchimp = new CRM_Mailchimp_Form_Pull(); 
-
-	// 	$mailchimp->postProcess(); 
-
-	// 	$mailchimp = new CRM_Mailchimp_Form_Sync(); 
-		
-	// 	$mailchimp->postProcess(); 
-
-	// }
-
 }
 
 class ConstantContactService{ 
 
-	//Calls the functions for Sync pull, Sync push and Dual Sync for Constant Contact. 
 	public function sync(){	
-		//require_once 'ConstantContactSync.php' ;
-		//civicrm_api3_job_constant_contact_sync( $sync_params ) ;
 		$result = civicrm_api3('Job', 'constant_contact_sync', array(
   		'sequential' => 1,
 		));
-		//crm_core_error::debug("Results of the ctct sync:",$result) ;
+		
 		if($result['is_error'] > 0 ){ 
 			CRM_Core_Session::setStatus("Number of Errors: ".$result['is_error'],'Unsuccessful Sync'); 
 		}
@@ -141,7 +97,7 @@ class ConstantContactService{
 }
 
 class GoogleAppsService{
-	//Calls the functions for Sync pull, Sync push and Dual Sync for Google Apps. 
+	
 	public function sync(){ 
 
 		$result = civicrm_api3('Job', 'googleapps_sync', array(
